@@ -47,7 +47,6 @@ exports.updateProfile = async (req, res) => {
   try {
     const { name, email, avatar, bio, location } = req.body;
 
-    // Vérifier si le nouvel email est déjà utilisé par un autre utilisateur
     if (email) {
       const existingUser = await User.findOne({ email, _id: { $ne: req.user.id } });
       if (existingUser) return res.status(400).json({ message: 'Cet email est déjà pris.' });

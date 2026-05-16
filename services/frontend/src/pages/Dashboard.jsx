@@ -45,7 +45,7 @@ function Dashboard() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result }); // Enregistre en Base64
+        setFormData({ ...formData, avatar: reader.result });
       };
       reader.readAsDataURL(file);
     }
