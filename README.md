@@ -67,7 +67,13 @@ kubectl get pods -n crowdauth -w
 ```
 
 ### Produce Heavy Traffic (Apache Benchmark)
-Use `ab` to generate mass requests to the authentication service logic:
+Use the helper Python script (wrapper around `ab`) to generate mass requests to the authentication service logic:
+```sh
+# Replace EXTERNAL-IP with your ingress/loadbalancer IP
+python3 scripts/stress_backend.py --base-url http://EXTERNAL-IP
+```
+
+Or run Apache Benchmark directly:
 ```sh
 # Wait for the service to be ready and substitute EXTERNAL-IP with your ingress/loadbalancer IP
 ab -n 50000 -c 1000 http://EXTERNAL-IP/api/auth/health
