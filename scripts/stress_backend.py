@@ -61,7 +61,7 @@ def main() -> int:
     args = parse_args()
 
     if args.requests <= 0 or args.concurrency <= 0:
-        print("requests and concurrency must both be greater than 0", file=sys.stderr)
+        print("'requests' and 'concurrency' must both be greater than 0", file=sys.stderr)
         return 2
 
     if shutil.which("ab") is None:
@@ -82,7 +82,7 @@ def main() -> int:
 
     if args.timeout is not None:
         if args.timeout <= 0:
-            print("timeout must be greater than 0", file=sys.stderr)
+            print("'timeout' must be greater than 0", file=sys.stderr)
             return 2
         command.extend(["-s", str(args.timeout)])
 
