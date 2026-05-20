@@ -15,12 +15,15 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: us-central1-docker.pkg.dev/projet-mana/demo-repo/auth-service
+          image: YOUR_ACR_NAME.azurecr.io/crowdauth-auth:latest
           env:
             - name: MONGO_URI
               value: "mongodb://mongodb:27017/crowdauth"
             - name: JWT_SECRET
-              value: "supersecret"
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-secrets
+                  key: JWT_SECRET
           ports:
             - containerPort: 5000
           resources:

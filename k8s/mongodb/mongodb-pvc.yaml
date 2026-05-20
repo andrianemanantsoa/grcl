@@ -4,6 +4,7 @@ metadata:
   name: mongodb-pvc
   namespace: crowdauth
 spec:
+  storageClassName: managed-csi
   accessModes:
     - ReadWriteOnce
   resources:

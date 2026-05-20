@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: us-central1-docker.pkg.dev/projet-mana/demo-repo/frontend
+          image: YOUR_ACR_NAME.azurecr.io/crowdauth-frontend:latest
           ports:
             - containerPort: 80
           resources:

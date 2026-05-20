@@ -17,24 +17,51 @@ docker-compose up -d --build
 2. Access the frontend at `http://localhost:3000`
 3. The auth service handles requests at `http://localhost:5000`
 
-## Kubernetes Deployment (GKE / Minikube)
+## Kubernetes Deployment on Microsoft Azure (AKS)
 
-### 1. Build and Push Docker Images
-Change `YOUR_DOCKER_USER` inside K8s deployment manifests before proceeding.
+### 1. Create Azure resources (AKS + ACR)
+Set variables then create a resource group, container registry, and AKS cluster.
 
 ```sh
-# Build images
-docker build -t YOUR_DOCKER_USER/crowdauth-auth:latest ./services/auth-service
-docker build -t YOUR_DOCKER_USER/crowdauth-frontend:latest ./services/frontend
+export RESOURCE_GROUP=grcl-rg
+export LOCATION=westeurope
+export AKS_CLUSTER=grcl-aks
+export ACR_NAME=grclacr12345 # must be globally unique
 
-# Push to Docker Hub
-docker push YOUR_DOCKER_USER/crowdauth-auth:latest
-docker push YOUR_DOCKER_USER/crowdauth-frontend:latest
+az group create --name $RESOURCE_GROUP --location $LOCATION
+az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic
+az aks create --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER --node-count 2 --enable-managed-identity --attach-acr $ACR_NAME
+az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER
 ```
 
-### 2. Deploy to Kubernetes
+### 2. Install NGINX ingress controller
 
-Deploy the required resources:
+```sh
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+```
+
+### 3. Build and push images to ACR
+
+```sh
+az acr login --name $ACR_NAME
+docker build -t $ACR_NAME.azurecr.io/crowdauth-auth:latest ./services/auth-service
+docker build -t $ACR_NAME.azurecr.io/crowdauth-frontend:latest ./services/frontend
+docker push $ACR_NAME.azurecr.io/crowdauth-auth:latest
+docker push $ACR_NAME.azurecr.io/crowdauth-frontend:latest
+```
+
+### 4. Prepare Kubernetes manifests
+1. In `k8s/auth-service/auth-deployment.yaml`, replace:
+   - `YOUR_ACR_NAME.azurecr.io/crowdauth-auth:latest`
+2. In `k8s/frontend/frontend-deployment.yaml`, replace:
+   - `YOUR_ACR_NAME.azurecr.io/crowdauth-frontend:latest`
+3. In `k8s/auth-service/auth-secret.yaml`, replace:
+   - `CHANGE_ME_WITH_A_STRONG_SECRET`
+
+### 5. Deploy to AKS
 
 ```sh
 kubectl apply -f k8s/namespace.yaml
@@ -44,13 +71,28 @@ kubectl apply -f k8s/frontend/
 kubectl apply -f k8s/ingress/
 ```
 
-### 3. Verify Deployment
-Check the status of your pods and services:
+### 6. Verify deployment
+
 ```sh
 kubectl get pods -n crowdauth
 kubectl get svc -n crowdauth
 kubectl get ingress -n crowdauth
+kubectl get hpa -n crowdauth
 ```
+
+Get external IP and test frontend/API:
+
+```sh
+kubectl get svc -n ingress-nginx
+curl http://<EXTERNAL-IP>/
+curl http://<EXTERNAL-IP>/api/auth/health
+```
+
+### 7. Production hardening (recommended)
+- Add TLS certificates (for example with cert-manager + Let's Encrypt).
+- Move secret creation to CI/CD or Key Vault + CSI driver.
+- Keep HPA enabled and tune thresholds from real traffic.
+- Automate build/push/deploy with GitHub Actions and Azure login (OIDC).
 
 ## Load Testing and HPA Autoscaling
 
@@ -74,4 +116,3 @@ ab -n 50000 -c 1000 http://EXTERNAL-IP/api/auth/health
 ```
 
 As the simulated load climbs and CPU load surpasses the 70% target, the HPA will automatically provision new `auth-service` pods up to the max boundary (10 replicas), validating your system's scalability.
-# grcl
