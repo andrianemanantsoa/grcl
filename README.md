@@ -87,8 +87,8 @@ Get external IP and test frontend/API:
 
 ```sh
 kubectl get svc -n ingress-nginx
-curl http://<EXTERNAL-IP>/
-curl http://<EXTERNAL-IP>/api/auth/health
+curl http://YOUR_EXTERNAL_IP/
+curl http://YOUR_EXTERNAL_IP/api/auth/health
 ```
 
 ### 7. Production hardening (recommended)
