@@ -26,7 +26,7 @@ Set variables then create a resource group, container registry, and AKS cluster.
 export RESOURCE_GROUP=grcl-rg
 export LOCATION=westeurope
 export AKS_CLUSTER=grcl-aks
-export ACR_NAME=YOUR_UNIQUE_ACR_NAME # globally unique in Azure, alphanumeric only, 5-50 chars
+export ACR_NAME=YOUR_UNIQUE_ACR_NAME # globally unique in Azure, lowercase alphanumeric only, 5-50 chars
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic
@@ -54,7 +54,7 @@ docker push $ACR_NAME.azurecr.io/crowdauth-frontend:latest
 ```
 
 ### 4. Prepare Kubernetes manifests
-You can replace `YOUR_ACR_NAME` with your `$ACR_NAME` value manually or with `sed`/`envsubst`.
+Replace `YOUR_ACR_NAME` with your `$ACR_NAME` value in both deployment manifests.
 
 1. In `k8s/auth-service/auth-deployment.yaml`, replace `YOUR_ACR_NAME` with your actual ACR name.
 2. In `k8s/frontend/frontend-deployment.yaml`, replace `YOUR_ACR_NAME` with your actual ACR name.
