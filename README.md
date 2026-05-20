@@ -56,10 +56,10 @@ docker push $ACR_NAME.azurecr.io/crowdauth-frontend:latest
 ### 4. Prepare Kubernetes manifests
 1. In `k8s/auth-service/auth-deployment.yaml`, replace:
    - `YOUR_ACR_NAME.azurecr.io/crowdauth-auth:latest`
-   - with: `$ACR_NAME.azurecr.io/crowdauth-auth:latest`
+   - with your real ACR name value, for example: `myrealacr.azurecr.io/crowdauth-auth:latest`
 2. In `k8s/frontend/frontend-deployment.yaml`, replace:
    - `YOUR_ACR_NAME.azurecr.io/crowdauth-frontend:latest`
-   - with: `$ACR_NAME.azurecr.io/crowdauth-frontend:latest`
+   - with your real ACR name value, for example: `myrealacr.azurecr.io/crowdauth-frontend:latest`
 3. In `k8s/auth-service/auth-secret.yaml`, replace:
    - `REPLACE_WITH_YOUR_STRONG_SECRET`
    - with your real JWT secret value (or use Azure Key Vault + CSI driver in production).
