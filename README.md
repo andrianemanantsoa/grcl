@@ -61,7 +61,7 @@ docker push $ACR_NAME.azurecr.io/crowdauth-frontend:latest
    - `YOUR_ACR_NAME.azurecr.io/crowdauth-frontend:latest`
    - with your real ACR name value, for example: `myrealacr.azurecr.io/crowdauth-frontend:latest`
 3. In `k8s/auth-service/auth-secret.yaml`, replace:
-   - `REPLACE_WITH_YOUR_STRONG_SECRET`
+   - `REPLACE_WITH_A_LONG_RANDOM_SECRET_VALUE`
    - with your real JWT secret value (or use Azure Key Vault + CSI driver in production).
 
 ### 5. Deploy to AKS
