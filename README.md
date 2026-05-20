@@ -26,7 +26,7 @@ Set variables then create a resource group, container registry, and AKS cluster.
 export RESOURCE_GROUP=grcl-rg
 export LOCATION=westeurope
 export AKS_CLUSTER=grcl-aks
-export ACR_NAME=YOUR_UNIQUE_ACR_NAME # globally unique in Azure, lowercase alphanumeric only, 5-50 chars
+export ACR_NAME=YOUR_UNIQUE_ACR_NAME # must be 5-50 lowercase alphanumeric characters and globally unique in Azure
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic
@@ -58,13 +58,16 @@ Replace `YOUR_ACR_NAME` with your `$ACR_NAME` value in both deployment manifests
 
 1. In `k8s/auth-service/auth-deployment.yaml`, replace `YOUR_ACR_NAME` with your actual ACR name.
 2. In `k8s/frontend/frontend-deployment.yaml`, replace `YOUR_ACR_NAME` with your actual ACR name.
-3. In `k8s/auth-service/auth-secret.yaml`, replace `REPLACE_WITH_A_LONG_RANDOM_SECRET_VALUE` with your real JWT secret value (or use Azure Key Vault + CSI driver in production).
 
 ### 5. Deploy to AKS
 
 ```sh
 kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/mongodb/
+kubectl create secret generic auth-service-secrets \
+  --from-literal=JWT_SECRET='your-strong-random-secret' \
+  -n crowdauth \
+  --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f k8s/auth-service/
 kubectl apply -f k8s/frontend/
 kubectl apply -f k8s/ingress/
