@@ -26,7 +26,7 @@ Set variables then create a resource group, container registry, and AKS cluster.
 export RESOURCE_GROUP=grcl-rg
 export LOCATION=westeurope
 export AKS_CLUSTER=grcl-aks
-export ACR_NAME=grclacr12345 # must be globally unique
+export ACR_NAME=YOUR_UNIQUE_ACR_NAME # must be globally unique
 
 az group create --name $RESOURCE_GROUP --location $LOCATION
 az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic
@@ -59,7 +59,7 @@ docker push $ACR_NAME.azurecr.io/crowdauth-frontend:latest
 2. In `k8s/frontend/frontend-deployment.yaml`, replace:
    - `YOUR_ACR_NAME.azurecr.io/crowdauth-frontend:latest`
 3. In `k8s/auth-service/auth-secret.yaml`, replace:
-   - `CHANGE_ME_WITH_A_STRONG_SECRET`
+   - `REPLACE_WITH_YOUR_STRONG_SECRET`
 
 ### 5. Deploy to AKS
 
